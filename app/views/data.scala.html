@@ -1,0 +1,18 @@
+@(title: String)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Employee</title>
+</head>
+<body>
+@title
+<form method="post" action="add">
+    名前：　<input type="text" name="name" /> <br />
+    所属部署コード：　<input type="text" name="department" /> <br />
+    入社日：　<input type="text" name="join_date" /> <br />
+    <input type="submit" value="登録" />
+</form>
+
+</body>
+</html>

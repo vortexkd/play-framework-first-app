@@ -32,6 +32,12 @@ public class HomeController extends Controller {
         return ok(index.render(json));
     }
 
+    public Result selectAll() {
+        String query = "SELECT * FROM test.employees";
+        String output = getJsonFromDB(query);
+        return ok(json.render(output));
+    }
+
     public Result query() {
         DynamicForm dynamicForm = Form.form().bindFromRequest();
         if(dynamicForm.get("queryCriteria") == null || dynamicForm.get("column") == null) {
