@@ -27,9 +27,7 @@ public class HomeController extends Controller {
      * <code>GET</code> request with a path of <code>/</code>.
      */
     public Result index() {
-        String query = "SELECT * FROM test.employees ORDER BY department_code;";
-        String json = getJsonFromDB(query);
-        return ok(index.render(json));
+        return ok(index.render(""));
     }
 
     public Result selectAll() {
