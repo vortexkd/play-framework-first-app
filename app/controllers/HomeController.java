@@ -5,6 +5,7 @@ import play.data.Form;
 import play.db.DB;
 import play.mvc.*;
 
+import utils.DBGetter;
 import utils.Employee;
 import views.html.*;
 
@@ -32,7 +33,7 @@ public class HomeController extends Controller {
 
     public Result selectAll() {
         String query = "SELECT * FROM test.employees";
-        String output = getJsonFromDB(query);
+        String output = DBGetter.getJsonFromDB(query);
         return ok(output);
     }
 
@@ -56,13 +57,13 @@ public class HomeController extends Controller {
 
     private Result queryDepartment(String criteria) {
         String query = "SELECT * FROM test.employees WHERE department_code=\"" + criteria + "\";";
-        String json = getJsonFromDB(query);
+        String json = DBGetter.getJsonFromDB(query);
         return ok(index.render(json));
     }
 
     private Result queryName (String criteria) {
         String query = "SELECT * FROM test.employees WHERE name=\"" + criteria + "\";";
-        String json = getJsonFromDB(query);
+        String json = DBGetter.getJsonFromDB(query);
         return ok(index.render(json));
     }
 
@@ -71,7 +72,7 @@ public class HomeController extends Controller {
         Matcher m = p.matcher(criteria);
         if(m.find()){
             String query = "SELECT * FROM test.employees WHERE join_at>=\"" + criteria + "\";";
-            String json = getJsonFromDB(query);
+            String json = DBGetter.getJsonFromDB(query);
             return ok(index.render(json));
         }
         return ok(index.render("No results"));
@@ -81,39 +82,4 @@ public class HomeController extends Controller {
         input = input.replaceAll("[\";\\\\]","");
         return input;
     }
-
-    private String getJsonFromDB(String query) {
-        String result = "";
-        List<Employee> employeeList = new ArrayList<>();
-        try {
-            //以下ががdeprecateされてるんですが、新しいオブジェクトDatabaseからディフォルトデータベースのインスタンスをもらう方法がよくわかりません
-            Connection connection = DB.getConnection();
-            Statement stmt = null;
-            stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            ResultSetMetaData rsmd = rs.getMetaData();
-            while (rs.next()) {
-                employeeList.add(
-                        new Employee (rs.getInt(1),rs.getNString(2),rs.getNString(3),
-                                rs.getNString(4),rs.getNString(5)));
-            }
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        if (employeeList.size() == 0) {
-            return "{}";
-        }
-        int count = 1;
-        if(employeeList.size() > 1) {
-            for (Employee e : employeeList.subList(0, employeeList.size() - 2)) {
-                result += "\"" + count + "\":" + e.toString() + ",";
-                count++;
-            }
-        }
-        result += "\"" + count + "\":" + employeeList.get(employeeList.size()-1).toString();
-        return "{" + result + "}";
-    }
-
-
 }

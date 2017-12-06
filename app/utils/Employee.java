@@ -15,6 +15,26 @@ public class Employee {
         this.department_code = department_code;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getJoin_date() {
+        return join_date;
+    }
+
+    public String getDepartment_code() {
+        return department_code;
+    }
+
     @Override
     public String toString(){
         return "{\"id\": \"" + id +
