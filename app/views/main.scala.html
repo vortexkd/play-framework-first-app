@@ -19,5 +19,14 @@
         @* And here's where we render the `Html` object containing
          * the page content. *@
         @content
+        <br />
+        <form method="post" action="query">
+            <input type="text" name="queryCriteria" /> <br />
+            <p>検索内容</p>
+            <input type="radio" name="column" value="1" checked="checked"/> 所属部署コード
+            <input type="radio" name="column" value="2" /> 名前
+            <input type="radio" name="column" value="3" /> 日の後で入社
+            <input type="submit" value="検索" />
+        </form>
     </body>
 </html>
