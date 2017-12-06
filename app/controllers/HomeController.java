@@ -29,13 +29,13 @@ public class HomeController extends Controller {
     public Result index() {
         String query = "SELECT * FROM test.employees ORDER BY department_code;";
         String json = getJsonFromDB(query);
-        return ok(json);
+        return ok(index.render(json));
     }
 
     public Result selectAll() {
         String query = "SELECT * FROM test.employees";
         String output = getJsonFromDB(query);
-        return ok(json.render(output));
+        return ok(output);
     }
 
     public Result query() {
