@@ -56,7 +56,7 @@ public class DataEntryController extends Controller{
         if (employee != null) {
             return ok(editInfo.render(employee.getName(), employee.getJoin_date(), employee.getDepartment_code(), employee.getCode()));
         } else {
-            return ok(index.render("No such employee"));
+            return ok(index.render("社員が登録しておりません"));
         }
     }
 

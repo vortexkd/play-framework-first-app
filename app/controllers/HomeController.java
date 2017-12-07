@@ -53,13 +53,13 @@ public class HomeController extends Controller {
     private Result queryDepartment(String criteria) {
         String query = "SELECT * FROM test.employees WHERE department_code=\"" + DBGetter.sanitizeCriteria(criteria) + "\";";
         String json = DBGetter.getJsonFromDB(query);
-        return ok(index.render(json));
+        return ok(json);
     }
 
     private Result queryName (String criteria) {
         String query = "SELECT * FROM test.employees WHERE name LIKE \"" + DBGetter.sanitizeCriteria(criteria) + "\";";
         String json = DBGetter.getJsonFromDB(query);
-        return ok(index.render(json));
+        return ok(json);
     }
 
     private Result queryAfterDate(String criteria) {
@@ -68,7 +68,7 @@ public class HomeController extends Controller {
         if(m.find()){
             String query = "SELECT * FROM test.employees WHERE join_at>=\"" + criteria + "\";";
             String json = DBGetter.getJsonFromDB(query);
-            return ok(index.render(json));
+            return ok(json);
         }
         return ok(index.render("No results"));
     }
