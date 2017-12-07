@@ -2,16 +2,11 @@ package controllers;
 
 import play.data.DynamicForm;
 import play.data.Form;
-import play.db.DB;
 import play.mvc.*;
 
 import utils.DBGetter;
-import utils.Employee;
 import views.html.*;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,7 +37,7 @@ public class HomeController extends Controller {
         if(dynamicForm.get("queryCriteria") == null || dynamicForm.get("column") == null) {
             return ok(index.render("No results"));
         }
-        String criteria = sanitizeCriteria((dynamicForm.get("queryCriteria")));
+        String criteria = dynamicForm.get("queryCriteria");
         switch (dynamicForm.get("column")) {
             case "1":
                 return queryDepartment(criteria);
@@ -56,13 +51,13 @@ public class HomeController extends Controller {
     }
 
     private Result queryDepartment(String criteria) {
-        String query = "SELECT * FROM test.employees WHERE department_code=\"" + criteria + "\";";
+        String query = "SELECT * FROM test.employees WHERE department_code=\"" + DBGetter.sanitizeCriteria(criteria) + "\";";
         String json = DBGetter.getJsonFromDB(query);
         return ok(index.render(json));
     }
 
     private Result queryName (String criteria) {
-        String query = "SELECT * FROM test.employees WHERE name=\"" + criteria + "\";";
+        String query = "SELECT * FROM test.employees WHERE name LIKE \"" + DBGetter.sanitizeCriteria(criteria) + "\";";
         String json = DBGetter.getJsonFromDB(query);
         return ok(index.render(json));
     }
@@ -76,10 +71,5 @@ public class HomeController extends Controller {
             return ok(index.render(json));
         }
         return ok(index.render("No results"));
-    }
-
-    private String sanitizeCriteria(String input) {
-        input = input.replaceAll("[\";\\\\]","");
-        return input;
     }
 }

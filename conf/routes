@@ -15,3 +15,6 @@ GET     /employees                  controllers.HomeController.selectAll
 POST    /query                      controllers.HomeController.query
 POST    /add                        controllers.DataEntryController.add
 GET     /new                        controllers.DataEntryController.makeNew
+GET     /chooseEdit                 controllers.DataEntryController.editChoice
+POST    /edit                       controllers.DataEntryController.edit
+POST    /update                     controllers.DataEntryController.update

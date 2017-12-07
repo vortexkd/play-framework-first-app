@@ -1,0 +1,17 @@
+@(name : String)(date : String)(dept : String)(code : String)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit</title>
+</head>
+<body>
+<form action="update" method="post">
+    <input type="text" name="name" value=@name />
+    <input type="text" name="date" value=@date />
+    <input type="text" name="dept" value=@dept />
+    <input type="hidden" name="token" value=@code />
+    <input type="submit" value="編集" />
+</form>
+</body>
+</html>

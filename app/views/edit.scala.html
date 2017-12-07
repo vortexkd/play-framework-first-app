@@ -1,0 +1,21 @@
+@(data : List[utils.Employee])
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit</title>
+</head>
+<body>
+
+<form method="post" action="edit">
+    社員IDまたお名前を入力してください : <input type="text" name="choice" />
+    <input type="submit" value="検索" />
+</form>
+<div>
+    @for(employee <- data) {
+    <p>@employee.toString()</p>
+    }
+</div>
+@data
+</body>
+</html>

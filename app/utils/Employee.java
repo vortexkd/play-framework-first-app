@@ -35,13 +35,17 @@ public class Employee {
         return department_code;
     }
 
-    @Override
-    public String toString(){
+    String toJSON(){
         return "{\"id\": \"" + id +
                 "\",\n\"code\": \"" + code +
                 "\",\n\"name\": \"" + name +
                 "\",\n\"join_at\": \"" + join_date +
                 "\",\n\"department_code\": \"" + department_code +
                 "\"}\n";
+    }
+
+    @Override
+    public String toString() {
+        return this.id + " - " + this.code + " - " + this.name + " - " + this.join_date + " - " + this.department_code;
     }
 }
