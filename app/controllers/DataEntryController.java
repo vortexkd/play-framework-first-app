@@ -1,7 +1,8 @@
 package controllers;
 
 import play.data.DynamicForm;
-import play.data.Form;
+import play.data.FormFactory;
+import play.db.Database;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -12,36 +13,49 @@ import views.html.data;
 import views.html.edit;
 import views.html.editInfo;
 
-import javax.swing.text.html.HTML;
+import javax.inject.Inject;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DataEntryController extends Controller{
 
+    @Inject
+    FormFactory formFactory;
+
+    @Inject
+    Database db;
+
     public Result makeNew(){
         return ok(data.render());
     }
 
     public Result add() {
-        DynamicForm dynamicForm = Form.form().bindFromRequest();
+        DBGetter dbGetter = new DBGetter(db);
+        DynamicForm dynamicForm = formFactory.form().bindFromRequest();
         if(dynamicForm.get("name") == null || dynamicForm.get("department") == null || dynamicForm.get("join_date") == null) {
-            return ok(index.render("Failed"));
+            return ok(index.render("入力失敗。"));
         }
         String name = dynamicForm.get("name");
         String dept = dynamicForm.get("department");
         String date = dynamicForm.get("join_date");
 
-        return ok(index.render(String.valueOf(DBGetter.insertIntoDB(name,date,dept))));
+        if(dbGetter.insertIntoDB(name,date,dept)) {
+            return ok(index.render("データベース入力成功！"));
+        } else {
+            return ok(index.render(String.valueOf("入力失敗。")));
+        }
     }
 
     public Result editChoice() {
-        List<Employee> employeeList = DBGetter.selectAll();
+        DBGetter dbGetter = new DBGetter(db);
+        List<Employee> employeeList = dbGetter.selectAll();
         return ok(edit.render(employeeList)); //
     }
 
     public Result edit() {
-        DynamicForm dynamicForm = Form.form().bindFromRequest();
+        DBGetter dbGetter = new DBGetter(db);
+        DynamicForm dynamicForm = formFactory.form().bindFromRequest();
         String criteria = dynamicForm.get("choice");
         String search = "";
         Pattern p = Pattern.compile("^[\\d]+$");
@@ -49,9 +63,9 @@ public class DataEntryController extends Controller{
         Employee employee;
         if (m.find()) {
             //is id
-            employee = DBGetter.selectUnique(Integer.valueOf(criteria));
+            employee = dbGetter.selectUnique(Integer.valueOf(criteria));
         } else {
-            employee = DBGetter.selectUnique(criteria);
+            employee = dbGetter.selectUnique(criteria);
         }
         if (employee != null) {
             return ok(editInfo.render(employee.getName(), employee.getJoin_date(), employee.getDepartment_code(), employee.getCode()));
@@ -61,10 +75,8 @@ public class DataEntryController extends Controller{
     }
 
     public Result update() {
-        //UPDATE `Table A`
-//        SET `text`= value
-//        WHERE `Table A`.`A-num` = `Table B`.`A-num`
-        DynamicForm dynamicForm = Form.form().bindFromRequest();
+        DBGetter dbGetter = new DBGetter(db);
+        DynamicForm dynamicForm = formFactory.form().bindFromRequest();
         String name = dynamicForm.get("name");
         String date = dynamicForm.get("date");
         String dept = dynamicForm.get("dept");
@@ -73,21 +85,13 @@ public class DataEntryController extends Controller{
         try {
             id = Integer.parseInt(code);
         } catch (NumberFormatException e) {
-            return ok(index.render("Failed"));
+            return ok(index.render("編集失敗"));
         }
 
-        if(DBGetter.update(id, name, date, dept)) {
+        if(dbGetter.update(id, name, date, dept)) {
             return ok(index.render(name+" "+date+" "+dept+" "+id));
         }
-        return ok(index.render("Failed"));
-    }
-
-
-
-
-    private String sanitizeCriteria(String input) {
-        input = input.replaceAll("[\";\\\\]","");
-        return input;
+        return ok(index.render("編集失敗"));
     }
 
 }

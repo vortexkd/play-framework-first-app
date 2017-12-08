@@ -1,15 +1,25 @@
 package utils;
 
-import play.db.DB;
+
+import play.db.Database;
+import utils.Employee;
 
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 public class DBGetter {
 
-    public static String getJsonFromDB(String query) {
+    private Database db;
+
+    public DBGetter(Database db) {
+        this.db = db;
+    }
+
+    public String getJsonFromDB(String query) {
         String result = "";
 
         List<Employee> employeeList = selectFromDB(query);
@@ -27,7 +37,7 @@ public class DBGetter {
         return "{" + result + "}";
     }
 
-    public static boolean insertIntoDB(String name, String date, String dept) {
+    public boolean insertIntoDB(String name, String date, String dept) {
         int id = getMaxID();
         if(id <= 0) {
             return false;
@@ -38,7 +48,7 @@ public class DBGetter {
         date = sanitizeCriteria(date);
         dept = sanitizeCriteria(dept).toUpperCase();
         try {
-            Connection connection = DB.getConnection();
+            Connection connection = db.getConnection();
             String insertQuery = "INSERT INTO test.employees (id,code,name,join_at,department_code) " + "VALUES(?,?,?,?,?)";
             PreparedStatement stmt = connection.prepareStatement(insertQuery);
             stmt.setInt(1,id);
@@ -55,12 +65,12 @@ public class DBGetter {
         return true;
     }
 
-    public static List<Employee> selectAll(){
+    public List<Employee> selectAll(){
         String query = "SELECT * FROM test.employees;";
         return selectFromDB(query);
     }
 
-    public static Employee selectUnique(String name) {
+    public Employee selectUnique(String name) {
         String query = "SELECT * FROM test.employees WHERE name Like \"" + sanitizeCriteria(name) + "\";";
         List<Employee> employeeList = selectFromDB(query);
         if (employeeList.size() == 0) {
@@ -70,7 +80,7 @@ public class DBGetter {
 
         }
     }
-    public static Employee selectUnique(int id) {
+    public Employee selectUnique(int id) {
         String query = "SELECT * FROM test.employees WHERE id = " + id;
         List<Employee> employeeList = selectFromDB(query);
         if (employeeList.size() == 0) {
@@ -80,13 +90,13 @@ public class DBGetter {
         }
     }
 
-    public static boolean update(int id, String name, String date, String dept) {
+    public boolean update(int id, String name, String date, String dept) {
         name = sanitizeCriteria(name);
         date = sanitizeCriteria(date);
         dept = sanitizeCriteria(dept).toUpperCase();
 
         try {
-            Connection connection = DB.getConnection();
+            Connection connection = db.getConnection();
             String query = "UPDATE test.employees SET name = ?, join_at = ?, department_code = ?  WHERE id= ? ;";
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, name);
@@ -102,21 +112,19 @@ public class DBGetter {
         return true;
     }
 
-    public static String sanitizeCriteria(String input) {
+    public String sanitizeCriteria(String input) {
         input = input.replaceAll("[\";\\\\]","");
         return input;
     }
 
-    private static List<Employee> selectFromDB(String sanitizedQuery) {
+    private List<Employee> selectFromDB(String sanitizedQuery) {
         List<Employee> employeeList = new ArrayList<>();
         try {
-            //以下ががdeprecateされてるんですが、新しいオブジェクトDatabaseからディフォルトデータベースのインスタンスをもらう方法がよくわかりません
-            Connection connection = DB.getConnection();
+            Connection connection = db.getConnection();
             Statement stmt = null;
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sanitizedQuery);
             System.out.println(sanitizedQuery);
-//            ResultSetMetaData rsmd = rs.getMetaData();
             while (rs.next()) {
                 employeeList.add(
                         new Employee (rs.getInt(1),rs.getNString(2),rs.getNString(3),
@@ -130,12 +138,12 @@ public class DBGetter {
         return employeeList;
     }
 
-    private static int getMaxID() {
+    private int getMaxID() {
         String selectAll = "SELECT MAX(id) FROM test.employees;";
         int id = -1;
         System.out.println(id);
         try {
-            Connection connection = DB.getConnection();
+            Connection connection = db.getConnection();
             Statement stmt = null;
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(selectAll);

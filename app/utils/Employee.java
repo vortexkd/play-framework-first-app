@@ -35,7 +35,7 @@ public class Employee {
         return department_code;
     }
 
-    String toJSON(){
+    public String toJSON(){
         return "{\"id\": \"" + id +
                 "\",\n\"code\": \"" + code +
                 "\",\n\"name\": \"" + name +

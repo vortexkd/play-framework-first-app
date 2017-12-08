@@ -1,12 +1,14 @@
 package controllers;
 
 import play.data.DynamicForm;
-import play.data.Form;
+import play.data.FormFactory;
+import play.db.Database;
 import play.mvc.*;
 
 import utils.DBGetter;
 import views.html.*;
 
+import javax.inject.Inject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,18 +24,28 @@ public class HomeController extends Controller {
      * this method will be called when the application receives a
      * <code>GET</code> request with a path of <code>/</code>.
      */
+    @Inject
+    FormFactory formFactory;
+
+    @Inject
+    Database db;
+
     public Result index() {
         return ok(index.render(""));
     }
 
     public Result selectAll() {
+        DBGetter dbGetter = new DBGetter(db);
         String query = "SELECT * FROM test.employees";
-        String output = DBGetter.getJsonFromDB(query);
-        return ok(output);
+        System.out.println("**********"+db.getName());
+        System.out.println("**********"+db.getUrl());
+        String output = dbGetter.getJsonFromDB(query);
+        return ok(output.toString());
     }
+    
 
     public Result query() {
-        DynamicForm dynamicForm = Form.form().bindFromRequest();
+        DynamicForm dynamicForm = formFactory.form().bindFromRequest();
         if(dynamicForm.get("queryCriteria") == null || dynamicForm.get("column") == null) {
             return ok(index.render("No results"));
         }
@@ -51,23 +63,26 @@ public class HomeController extends Controller {
     }
 
     private Result queryDepartment(String criteria) {
-        String query = "SELECT * FROM test.employees WHERE department_code=\"" + DBGetter.sanitizeCriteria(criteria) + "\";";
-        String json = DBGetter.getJsonFromDB(query);
+        DBGetter dbGetter = new DBGetter(db);
+        String query = "SELECT * FROM test.employees WHERE department_code=\"" + dbGetter.sanitizeCriteria(criteria) + "\";";
+        String json = dbGetter.getJsonFromDB(query);
         return ok(json);
     }
 
     private Result queryName (String criteria) {
-        String query = "SELECT * FROM test.employees WHERE name LIKE \"" + DBGetter.sanitizeCriteria(criteria) + "\";";
-        String json = DBGetter.getJsonFromDB(query);
+        DBGetter dbGetter = new DBGetter(db);
+        String query = "SELECT * FROM test.employees WHERE name LIKE \"" + dbGetter.sanitizeCriteria(criteria) + "\";";
+        String json = dbGetter.getJsonFromDB(query);
         return ok(json);
     }
 
     private Result queryAfterDate(String criteria) {
+        DBGetter dbGetter = new DBGetter(db);
         Pattern p = Pattern.compile("\\d\\d\\d\\d/\\d\\d/\\d\\d");
         Matcher m = p.matcher(criteria);
         if(m.find()){
             String query = "SELECT * FROM test.employees WHERE join_at>=\"" + criteria + "\";";
-            String json = DBGetter.getJsonFromDB(query);
+            String json = dbGetter.getJsonFromDB(query);
             return ok(json);
         }
         return ok(index.render("No results"));
