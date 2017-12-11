@@ -11,10 +11,13 @@ GET     /                           controllers.HomeController.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+#to connect to
 GET     /employees                  controllers.HomeController.selectAll
 POST    /query                      controllers.HomeController.query
-POST    /add                        controllers.DataEntryController.add
-GET     /new                        controllers.DataEntryController.makeNew
-GET     /chooseEdit                 controllers.DataEntryController.editChoice
-POST    /edit                       controllers.DataEntryController.edit
-POST    /update                     controllers.DataEntryController.update
+POST    /add                        controllers.HomeController.add
+POST    /edit                       controllers.HomeController.edit
+POST    /update                     controllers.HomeController.update
+#no need to connect to
+GET     /new                        controllers.HomeController.makeNew
+GET     /chooseEdit                 controllers.HomeController.editChoice
+

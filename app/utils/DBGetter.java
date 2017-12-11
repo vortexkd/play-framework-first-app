@@ -2,7 +2,6 @@ package utils;
 
 
 import play.db.Database;
-import utils.Employee;
 
 import java.sql.*;
 import java.text.DecimalFormat;
@@ -47,8 +46,7 @@ public class DBGetter {
         name = sanitizeCriteria(name);
         date = sanitizeCriteria(date);
         dept = sanitizeCriteria(dept).toUpperCase();
-        try {
-            Connection connection = db.getConnection();
+        try (Connection connection = db.getConnection()) {
             String insertQuery = "INSERT INTO test.employees (id,code,name,join_at,department_code) " + "VALUES(?,?,?,?,?)";
             PreparedStatement stmt = connection.prepareStatement(insertQuery);
             stmt.setInt(1,id);
@@ -95,8 +93,7 @@ public class DBGetter {
         date = sanitizeCriteria(date);
         dept = sanitizeCriteria(dept).toUpperCase();
 
-        try {
-            Connection connection = db.getConnection();
+        try (Connection connection = db.getConnection()){
             String query = "UPDATE test.employees SET name = ?, join_at = ?, department_code = ?  WHERE id= ? ;";
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, name);
@@ -119,12 +116,11 @@ public class DBGetter {
 
     private List<Employee> selectFromDB(String sanitizedQuery) {
         List<Employee> employeeList = new ArrayList<>();
-        try {
-            Connection connection = db.getConnection();
+        try (Connection connection = db.getConnection()){
             Statement stmt = null;
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sanitizedQuery);
-            System.out.println(sanitizedQuery);
+//            System.out.println(sanitizedQuery);
             while (rs.next()) {
                 employeeList.add(
                         new Employee (rs.getInt(1),rs.getNString(2),rs.getNString(3),
@@ -141,9 +137,8 @@ public class DBGetter {
     private int getMaxID() {
         String selectAll = "SELECT MAX(id) FROM test.employees;";
         int id = -1;
-        System.out.println(id);
-        try {
-            Connection connection = db.getConnection();
+//        System.out.println(id);
+        try (Connection connection = db.getConnection()) {
             Statement stmt = null;
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(selectAll);

@@ -37,11 +37,11 @@ public class Employee {
 
     public String toJSON(){
         return "{\"id\": \"" + id +
-                "\",\n\"code\": \"" + code +
-                "\",\n\"name\": \"" + name +
-                "\",\n\"join_at\": \"" + join_date +
-                "\",\n\"department_code\": \"" + department_code +
-                "\"}\n";
+                "\",\"code\": \"" + code +
+                "\",\"name\": \"" + name +
+                "\",\"join_at\": \"" + join_date +
+                "\",\"department_code\": \"" + department_code +
+                "\"}";
     }
 
     @Override
